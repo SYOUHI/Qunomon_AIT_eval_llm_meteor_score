@@ -26,10 +26,10 @@
     {
       "name": "llm_model_dir",
       "type": "model",
-      "description": "事前にトレーニング済みの大規模言語モデルのディレクトリ\n 例:T5, GPT-3\n モデルファイルは、config.json, model.safetensors, generation_config.json, special_tokens_map.json, tokenizer_config.json, tokenizer.jsonを含む",
+      "description": "事前にトレーニング済みの大規模言語モデルと、そのモデルの設定ファイルを保存したディレクトリ\n 例:T5, GPT-3\n モデルファイルは、config.json, model.safetensors, generation_config.json, special_tokens_map.json, tokenizer_config.json, tokenizer.jsonを含む",
       "requirement": {
         "format": [
-          "json"
+          "ALL"
         ]
       }
     }
@@ -59,8 +59,8 @@
       "description": "AIT実行ログ"
     },
     {
-      "name": "eval_Log",
-      "description": "Meteor実行ログ"
+      "name": "meteor_table",
+      "description": "Meteor評価結果CSV。以下の項目を含む\n inputs:原文テキスト\n references:参照翻訳テキスト\n predictions:モデルで生成した訳分\n METEORスコア"
     }
   ]
 }

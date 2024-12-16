@@ -38,7 +38,7 @@
 
 # [uneditable]
 
-# In[ ]:
+# In[1]:
 
 
 # Determine whether to start AIT or jupyter by startup argument
@@ -93,7 +93,6 @@ if not is_ait_launch:
     requirements_generator.add_package('ipywidgets','8.1.5')
     requirements_generator.add_package('transformers','4.46.3')
     requirements_generator.add_package('torch','2.5.1')
-    requirements_generator.add_package('nltk','3.9.1')
 
 
 # #### #3-3 [uneditable]
@@ -117,7 +116,6 @@ if not is_ait_launch:
 
 # import if you need modules cell
 
-import nltk
 from nltk.translate.meteor_score import meteor_score
 import os
 import pandas as pd
@@ -169,8 +167,8 @@ if not is_ait_launch:
     inventory_requirement_model = manifest_genenerator.format_ait_inventory_requirement(format_=['ALL'])
     manifest_genenerator.add_ait_inventories(name='llm_model_dir', 
                                               type_='model', 
-                                              description='事前にトレーニング済みの大規模言語モデルのディレクトリ\n 例:T5, GPT-3\n モデルファイルは、config.json, model.safetensors, generation_config.json, special_tokens_map.json, tokenizer_config.json, tokenizer.jsonを含む', 
-                                              requirement=inventory_requirement_data)
+                                              description='事前にトレーニング済みの大規模言語モデルと、そのモデルの設定ファイルを保存したディレクトリ\n 例:T5, GPT-3\n モデルファイルは、config.json, model.safetensors, generation_config.json, special_tokens_map.json, tokenizer_config.json, tokenizer.jsonを含む', 
+                                              requirement=inventory_requirement_model)
     manifest_genenerator.add_ait_measures(name='METEOR_Score', 
                                            type_='float', 
                                            description='計算されたMETEORスコア', 
@@ -181,8 +179,8 @@ if not is_ait_launch:
                                            description='METEORスコアが最も低い10セットのデータサンプル')
     manifest_genenerator.add_ait_downloads(name='Log', 
                                             description='AIT実行ログ')
-    manifest_genenerator.add_ait_downloads(name='eval_Log', 
-                                            description='Meteor実行ログ')
+    manifest_genenerator.add_ait_downloads(name='meteor_table', 
+                                            description='Meteor評価結果CSV。以下の項目を含む\n inputs:原文テキスト\n references:参照翻訳テキスト\n predictions:モデルで生成した訳分\n METEORスコア')
     manifest_path = manifest_genenerator.write()
 
 
@@ -273,8 +271,8 @@ def mean_meteor(mean_meteor):
 
 
 @log(logger)
-@downloads(ait_output, path_helper, 'eval_Log', 'eval_log.csv')
-def eval_result(eval_table, file_path: str=None) -> str:    
+@downloads(ait_output, path_helper, 'meteor_table', 'meteor_table.csv')
+def eval_result(eval_table, file_path: str=None) -> str:
     eval_table.to_csv(file_path, index=False)
 
 
@@ -319,7 +317,6 @@ def move_log(file_path: str=None) -> str:
 @log(logger)
 @ait_main(ait_output, path_helper, is_ait_launch)
 def main() -> None:
-    nltk.download('wordnet')
     # 並列処理の警告を抑制
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
     #インプットデータロードする
